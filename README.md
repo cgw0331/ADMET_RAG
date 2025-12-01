@@ -54,17 +54,10 @@ export OPEN_API_KEY=sk-...
 
 ```
 repo/
- ├─ github_upload/                 # 이 폴더(핵심 스크립트/문서)
- ├─ raws/                          # 본문 PDF
- ├─ data_test/                     # 실험용 베이스 디렉터리(산출물 위치)
- │   ├─ supp/                      # 보충자료 저장
- │   ├─ text_extracted/            # 텍스트 추출물
- │   ├─ graph_extracted/           # YOLO 등으로 분리된 도식/표
- │   ├─ graph_analyzed/            # 비전 분석 결과(JSON)
- │   ├─ supp_extracted/            # 보충자료(엑셀/워드/PDF) 분석 결과
- │   ├─ entity_analyzed/           # 코어퍼런스/명칭 통합
- │   └─ final_extracted/           # 최종 ADMET JSON/CSV
- └─ selected_pmcs.txt              # 선택 처리 시 사용(옵션)
+ ├─ ..
+ ├─ download/                          # PDF, 보충자료 다운로드 스크립트 
+ ├─ preprocess/                        # 전처리 스크립ㅇㅌ으 
+ └─ ..              # 선택 처리 시 사용(옵션)
 ```
 
 ## Core Scripts
