@@ -130,10 +130,9 @@ python final_extract_admet.py --base_dir data_test
 
 ## Notes
 
-- 코드 예시는 연구용 템플릿입니다. 실제 배포/운영 시 키 관리, 로깅, 에러 처리, 속도 제한을 강화하세요.
+- 코드 예시는 연구용 템플릿이며, 미완성 입니다.
 
 ## License
 
-- TBD (조직 정책에 맞게 설정)
-*** End Patch***} -->
+- 
 
