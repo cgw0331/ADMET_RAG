@@ -171,7 +171,7 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     
     # Extract tables from Word
-    print(f"Extracting tables from Word (Llama 사용 안함)...")
+    print(f"Extracting tables from Word (Llama 사용 X)...")
     tables = extract_tables_from_word(word_path)
     
     # 테이블 데이터를 long format으로 변환
@@ -193,14 +193,14 @@ def main():
         n_compounds = df["compound_name"].nunique()
         n_rows = len(df)
         
-        print(f"✅ Word 테이블 추출 완료 (Llama 사용 안함)")
+        print(f"Word 테이블 추출 완료 (Llama 사용 X)")
         print(f"  word: {word_path}")
         print(f"  compounds: {n_compounds} | rows: {n_rows}")
         print(f"  saved: {csv_path}")
         print(f"  saved: {json_path}")
     else:
         # 테이블이 없으면 텍스트만 추출
-        print("  ⚠️  테이블 없음, 텍스트만 저장")
+        print("테이블 없음, 텍스트만 저장")
         text_content = extract_text_from_word(word_path)
         
         if text_content:
@@ -209,7 +209,7 @@ def main():
                 f.write(text_content)
             print(f"  텍스트 저장: {text_path}")
         else:
-            print(f"  ❌ 텍스트도 없음")
+            print(f"텍스트 없음")
 
 if __name__ == "__main__":
     main()
