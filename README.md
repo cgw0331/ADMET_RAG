@@ -1,5 +1,8 @@
 ## Project Overview
 
+<img width="1039" height="670" alt="image" src="https://github.com/user-attachments/assets/cdbe299b-1d68-4c13-b38c-1191c6a5e322" />
+
+
 LLM + RAG 기반으로 논문 본문·이미지·보충자료에서 ADMET 지표를 자동 추출·정규화하는 파이프라인입니다. PubMed/PMC에서 문서를 수집하고, 텍스트/표/이미지를 처리한 후, 컨텍스트를 누적하여 최종 JSON/CSV 산출물을 생성합니다.
 
 ## 현재 진행
