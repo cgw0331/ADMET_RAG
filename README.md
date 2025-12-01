@@ -6,6 +6,17 @@ LLM + RAG 기반으로 논문 본문·이미지·보충자료에서 ADMET 지표
 
 - Multi-Agent가 유기적으로 상호작용 할 수 있도록 Tools를 설계하고 있는 단계입니다.
 
+## To Do
+
+Tool 설계 
+- Appendix 다운로드 자동화 ( Appendix 봇 차단 우회 방법 찾기 ) 
+- OCR 방법 교체 ( YoLo v8 -> deepseek OCR 모델로 교체 시도)
+- 동지시어 추출 자동화 및 단어 및 단위 표준화
+- 동지시어와 내용 유기적 연결 방법 찾기 
+- 에이전트, 입력 토큰 처리 방법 교체
+
+Agent 자동화
+- 일단 Tool 설계해서 수동으로 했을 때 되면 계획을 세워야 될 것으로 보임.
 
 ## Key Features
 
