@@ -1,0 +1,16 @@
+requests
+beautifulsoup4
+lxml
+pdfplumber
+python-dateutil
+tqdm
+biopython
+PyMuPDF
+Pillow
+pandas
+ultralytics
+llama-index
+torch
+numpy
+datasets
+huggingface_hub
