@@ -16,7 +16,7 @@ pip install -r 20251201/requirements.txt
 ## Folder Layout
 
 ```
-20251201/
+ADMET_RAG/
  ├─ download/                 # 수집/다운로드 단계
  │   ├─ pubmed_to_pdf.py
  │   ├─ pmc_direct_collector.py
