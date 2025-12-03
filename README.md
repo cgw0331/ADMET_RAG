@@ -1,5 +1,136 @@
 ## Project Overview
 
+LLM + RAG 기반으로 논문 본문·이미지·보충자료에서 ADMET 지표를 자동 추출·정규화하는 파이프라인입니다. PubMed/PMC에서 문서를 수집하고, 텍스트/표/이미지를 처리한 후, 컨텍스트를 누적하여 최종 JSON/CSV 산출물을 생성합니다.
+
+## Environment
+
+- Python 3.10+ (Conda 권장)
+
+```bash
+conda create -n extRAG python=3.10 -y
+conda activate extRAG
+pip install -r 20251201/requirements.txt
+```
+
+## Folder Layout
+
+```
+20251201/
+ ├─ download/                 # 수집/다운로드 단계
+ │   ├─ pubmed_to_pdf.py
+ │   ├─ pmc_direct_collector.py
+ │   └─ supp_downloader.py
+ ├─ preprocess/               # 전처리/분석/통합 단계
+ │   ├─ supplements/          # 보충자료 처리
+ │   │   ├─ extract_excel_supplements.py
+ │   │   ├─ extract_word_supplements.py
+ │   │   ├─ batch_process_all_supplements.py
+ │   │   └─ batch_process_supplement_pdfs.py
+ │   ├─ vision/               # 이미지/표 분석
+ │   │   ├─ batch_analyze_main_images.py
+ │   │   ├─ batch_analyze_supplement_images.py
+ │   │   ├─ analyze_yolo_extracted_images.py
+ │   │   └─ vision_agent_admet(_llama).py
+ │   ├─ coref/                # 코어퍼런스 사전 구축
+ │   │   └─ build_global_coreference.py
+ │   └─ integration/          # 컨텍스트/최종 통합
+ │       ├─ contextual_extraction_pipeline.py
+ │       ├─ final_extract_admet.py
+ │       ├─ final_extract_admet_contextual.py
+ │       ├─ final_extract_admet_react.py
+ │       └─ integrate_all_data.py
+ ├─ orchestration/            # 멀티 에이전트 오케스트레이터
+ │   └─ multi_agent_orchestrator.py
+ ├─ docs/                     # 문서
+ │   └─ PROJECT_STATUS.md
+ └─ requirements.txt
+```
+
+## Core Scripts
+
+- 수집/다운로드
+  - `download/pubmed_to_pdf.py`: PMC 본문 PDF 수집 및 필터링(JATS/키워드)
+  - `download/pmc_direct_collector.py`: PMC/DOI → 퍼블리셔 랜딩 해석
+  - `download/supp_downloader.py`: 보충자료 다운로드(Referer/Accept/재시도/검증)
+- 보충자료 처리
+  - `preprocess/supplements/extract_excel_supplements.py`, `extract_word_supplements.py`
+  - `preprocess/supplements/batch_process_all_supplements.py`, `batch_process_supplement_pdfs.py`
+- 이미지/표 분석
+  - `preprocess/vision/batch_analyze_main_images.py`
+  - `preprocess/vision/batch_analyze_supplement_images.py`
+  - `preprocess/vision/analyze_yolo_extracted_images.py`
+- 코어퍼런스
+  - `preprocess/coref/build_global_coreference.py`
+- 컨텍스트/최종 통합
+  - `preprocess/integration/contextual_extraction_pipeline.py`
+  - `preprocess/integration/final_extract_admet*.py`
+  - `preprocess/integration/integrate_all_data.py`
+- 오케스트레이션
+  - `orchestration/multi_agent_orchestrator.py`
+
+## Quick Start
+
+1) 본문 PDF 수집(옵션: 이미 보유 시 생략)
+```bash
+conda activate extRAG
+python 20251201/download/pubmed_to_pdf.py --out data_test/raws --max 50
+```
+
+2) 보충자료 다운로드(필요한 PMCID만 선택 가능)
+```bash
+python 20251201/download/supp_downloader.py PMC12345678 -o data_test/supp
+```
+
+3) 보충자료/이미지 처리 배치
+```bash
+python 20251201/preprocess/supplements/batch_process_all_supplements.py --pmc_id PMC12345678 --base_dir data_test
+```
+
+4) 최종 ADMET 통합 추출 및 CSV 생성
+```bash
+python 20251201/preprocess/integration/final_extract_admet.py --pmc_id PMC12345678 --base_dir data_test
+# 결과: data_test/final_extracted/{PMCID}_final_admet.json, 프로젝트 단위 CSV
+```
+
+5) 멀티 에이전트 오케스트레이터(원샷 실행)
+```bash
+python 20251201/orchestration/multi_agent_orchestrator.py --pmc_id PMC12345678 --base_dir data_test
+# 옵션: --no-vision / --no-coref / --no-main
+```
+
+## 현재 진행
+
+Multi-Agent가 유기적으로 상호작용할 수 있도록 Tools를 설계하고 있는 단계입니다.
+
+## To Do
+
+- Tool 설계
+  - Appendix 다운로드 자동화(봇 차단 우회 방법 검토)
+  - OCR 방법 교체(YOLO v8 → Deepseek OCR 시도), Figure와 Caption을 함께 처리해 본문 연계성 향상
+  - 동지시어(coreference) 추출 자동화 및 단어/단위 표준화
+  - 동지시어와 내용 유기적 연결 방법 확립
+  - 에이전트·입력 토큰 처리 방법 개선
+- Agent 자동화
+  - Tool 설계를 수동 검증 후 자동화 계획 수립
+- RAG 설계
+  - 데이터 추출 단계 구현 완료 후 RAG 설계 본가동
+
+## Tips & Troubleshooting
+
+- 403/429로 보충자료 다운로드 실패
+  - `supp_downloader.py`는 브라우저형 헤더·Referer·재시도(백오프)를 적용합니다.
+  - 그래도 실패 시 수동 다운로드 또는 대체 리포지터리(저자 저장소, Dryad/Zenodo/OSF) 확인 권장.
+- “HTML 저장” 문제
+  - 다운로드 후 `Content-Type`, 파일 시그니처(`%PDF`, `PK`) 검증. HTML 응답은 자동 폐기.
+- 토큰 한도/대용량 논문
+  - 통합 추출 스크립트는 배치 처리로 분할 호출. 배치 크기 조정으로 실패율 저감.
+
+## License
+
+TBD (조직 정책에 맞게 설정)
+*** End Patch***  } ***!
+## Project Overview
+
 <img width="1039" height="670" alt="image" src="https://github.com/user-attachments/assets/cdbe299b-1d68-4c13-b38c-1191c6a5e322" />
 
 
@@ -128,4 +259,5 @@ python final_extract_admet.py --base_dir data_test
 ## License
 
 - 
+
 
